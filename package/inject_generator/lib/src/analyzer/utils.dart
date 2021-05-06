@@ -11,7 +11,7 @@ import 'package:inject_generator/src/source/symbol_path.dart';
 
 /// Constructs a serializable path to [element].
 SymbolPath getSymbolPath(Element element) {
-  if (element is TypeDefiningElement && element.type.isDynamic) {
+  if (element is TypeDefiningElement && element.kind == ElementKind.DYNAMIC) {
     throw new ArgumentError('Dynamic element type not supported. This is a '
         'package:inject bug. Please report it.');
   }
@@ -38,13 +38,10 @@ InjectedType getInjectedType(DartType type, {SymbolPath qualifier}) {
           'Your function type did not include a return type.');
       throw new ArgumentError();
     }
-    return new InjectedType(
-        _getLookupKey(type.returnType, qualifier: qualifier),
-        isProvider: true);
+    return new InjectedType(_getLookupKey(type.returnType, qualifier: qualifier), isProvider: true);
   }
 
-  return new InjectedType(_getLookupKey(type, qualifier: qualifier),
-      isProvider: false);
+  return new InjectedType(_getLookupKey(type, qualifier: qualifier), isProvider: false);
 }
 
 LookupKey _getLookupKey(DartType type, {SymbolPath qualifier}) =>
@@ -67,9 +64,9 @@ ElementAnnotation _getAnnotation(Element element, SymbolPath annotationSymbol,
       builderContext.log.severe(
         annotation.element ?? element,
         'While looking for annotation ${pathToAnnotation} on "${element}", '
-            'failed to resolve annotation value. A common cause of this error is '
-            'a misspelling or a failure to resolve the import where the '
-            'annotation comes from.',
+        'failed to resolve annotation value. A common cause of this error is '
+        'a misspelling or a failure to resolve the import where the '
+        'annotation comes from.',
       );
     } else if (getSymbolPath(valueElement) == annotationSymbol) {
       return annotation;
@@ -130,8 +127,7 @@ bool isSingletonClass(ClassElement clazz) {
 }
 
 /// Whether [clazz] is annotated with `@Module()`.
-bool isModuleClass(ClassElement clazz) =>
-    _hasAnnotation(clazz, SymbolPath.module);
+bool isModuleClass(ClassElement clazz) => _hasAnnotation(clazz, SymbolPath.module);
 
 /// Whether [clazz] is annotated with `@Injector()`.
 bool isInjectorClass(ClassElement clazz) => hasInjectorAnnotation(clazz);
@@ -140,12 +136,10 @@ bool isInjectorClass(ClassElement clazz) => hasInjectorAnnotation(clazz);
 bool hasProvideAnnotation(Element e) => _hasAnnotation(e, SymbolPath.provide);
 
 /// Whether [e] is annotated with `@Singleton()`.
-bool hasSingletonAnnotation(Element e) =>
-    _hasAnnotation(e, SymbolPath.singleton);
+bool hasSingletonAnnotation(Element e) => _hasAnnotation(e, SymbolPath.singleton);
 
 /// Whether [e] is annotated with `@Asynchronous()`.
-bool hasAsynchronousAnnotation(Element e) =>
-    _hasAnnotation(e, SymbolPath.asynchronous);
+bool hasAsynchronousAnnotation(Element e) => _hasAnnotation(e, SymbolPath.asynchronous);
 
 /// Whether [e] is annotated with `@Qualifier(...)`.
 bool hasQualifier(Element e) => _hasAnnotation(e, SymbolPath.qualifier);
@@ -165,5 +159,4 @@ bool hasInjectorAnnotation(Element e) => _hasAnnotation(e, SymbolPath.injector);
 /// Throws if the annotation is missing. It is assumed that the calling code
 /// already verified the existence of the annotation using
 /// [hasInjectorAnnotation].
-ElementAnnotation getInjectorAnnotation(Element e) =>
-    _getAnnotation(e, SymbolPath.injector);
+ElementAnnotation getInjectorAnnotation(Element e) => _getAnnotation(e, SymbolPath.injector);
