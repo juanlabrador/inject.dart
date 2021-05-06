@@ -80,8 +80,8 @@ class _LibraryVisitor extends RecursiveElementVisitor<Null> {
       builderContext.log.severe(
         element,
         'A class may be an injectable, a module or an injector, '
-            'but not more than one of these types. However class '
-            '${element.name} was found to be ${types.join(' and ')}',
+        'but not more than one of these types. However class '
+        '${element.name} was found to be ${types.join(' and ')}',
       );
       return null;
     }
@@ -91,8 +91,8 @@ class _LibraryVisitor extends RecursiveElementVisitor<Null> {
     }
     if (isInjectable) {
       bool singleton = isSingletonClass(element);
-      bool asynchronous = hasAsynchronousAnnotation(element) ||
-          element.constructors.any(hasAsynchronousAnnotation);
+      bool asynchronous =
+          hasAsynchronousAnnotation(element) || element.constructors.any(hasAsynchronousAnnotation);
       if (asynchronous) {
         builderContext.log.severe(
           element,
@@ -116,14 +116,11 @@ class _LibraryVisitor extends RecursiveElementVisitor<Null> {
 
 List<SymbolPath> _extractModules(ClassElement clazz) {
   ElementAnnotation annotation = getInjectorAnnotation(clazz);
-  List<DartObject> modules =
-      annotation.constantValue.getField('modules').toListValue();
+  List<DartObject> modules = annotation.computeConstantValue().getField('modules').toListValue();
   if (modules == null) {
     return const <SymbolPath>[];
   }
-  return modules
-      .map((DartObject obj) => getSymbolPath(obj.toTypeValue().element))
-      .toList();
+  return modules.map((DartObject obj) => getSymbolPath(obj.toTypeValue().element)).toList();
 }
 
 /// Scans a resolved [ClassElement] looking for metadata-annotated members.
@@ -140,7 +137,7 @@ abstract class InjectClassVisitor {
 
   /// Call to start visiting [clazz].
   void visitClass(ClassElement clazz) {
-    for (var supertype in clazz.allSupertypes.where((t) => !t.isObject)) {
+    for (var supertype in clazz.allSupertypes.where((t) => !t.isDartCoreObject)) {
       new _AnnotatedClassVisitor(this).visitClassElement(supertype.element);
     }
     new _AnnotatedClassVisitor(this).visitClassElement(clazz);
@@ -176,8 +173,7 @@ class _AnnotatedClassVisitor extends GeneralizingElementVisitor<Null> {
   _AnnotatedClassVisitor(this._classVisitor);
 
   bool _isProvider(ExecutableElement element) =>
-      hasProvideAnnotation(element) ||
-      (_classVisitor._isForInjector && element.isAbstract);
+      hasProvideAnnotation(element) || (_classVisitor._isForInjector && element.isAbstract);
 
   @override
   Null visitMethodElement(MethodElement method) {
