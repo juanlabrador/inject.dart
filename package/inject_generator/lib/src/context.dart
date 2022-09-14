@@ -86,43 +86,16 @@ class BuilderLogger {
 
   /// Logs a warning adding [element]'s source information to the message.
   void warning(Element element, String message) {
-    builderContext.rawLogger.warning(_constructMessage(element, message));
+    //builderContext.rawLogger.warning(_constructMessage(element, message));
   }
 
   /// Logs a warning adding [element]'s source information to the message.
   void info(Element element, String message) {
-    builderContext.rawLogger.info(_constructMessage(element, message));
+    //builderContext.rawLogger.info(_constructMessage(element, message));
   }
 
   /// Logs a warning adding [element]'s source information to the message.
   void severe(Element element, String message) {
-    builderContext.rawLogger.severe(_constructMessage(element, message));
-  }
-
-  String _constructMessage(Element element, String message) {
-    // <TRANSITIONAL_API>
-    ElementDeclarationResult elementDeclaration;
-    if (element.kind != ElementKind.DYNAMIC) {
-      var parsedLibrary = element.library.session.getParsedLibraryByElement(element.library);
-      if (parsedLibrary.state == ResultState.VALID) {
-        elementDeclaration = parsedLibrary.getElementDeclaration(element);
-      }
-    }
-    // </TRANSITIONAL_API>
-    String sourceLocation;
-    String source;
-
-    if (elementDeclaration?.node == null || element.source == null) {
-      sourceLocation = 'at unknown source location:';
-      source = '.';
-    } else {
-      var offset = elementDeclaration.node.offset;
-      var location = elementDeclaration.parsedUnit.lineInfo.getLocation(offset);
-      var code = elementDeclaration.node.toSource();
-      sourceLocation = 'at $location:';
-      source = ':\n\n$code';
-    }
-
-    return '${_inputId} ${sourceLocation} ${message}${source}';
+    //builderContext.rawLogger.severe(_constructMessage(element, message));
   }
 }

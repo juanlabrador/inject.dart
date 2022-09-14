@@ -115,12 +115,12 @@ class _LibraryVisitor extends RecursiveElementVisitor<Null> {
 }
 
 List<SymbolPath> _extractModules(ClassElement clazz) {
-  ElementAnnotation annotation = getInjectorAnnotation(clazz);
-  List<DartObject> modules = annotation.computeConstantValue().getField('modules').toListValue();
+  ElementAnnotation? annotation = getInjectorAnnotation(clazz);
+  List<DartObject>? modules = annotation?.computeConstantValue()?.getField('modules')?.toListValue();
   if (modules == null) {
     return const <SymbolPath>[];
   }
-  return modules.map((DartObject obj) => getSymbolPath(obj.toTypeValue().element)).toList();
+  return modules.map((DartObject obj) => getSymbolPath(obj.toTypeValue()!.element!)).toList();
 }
 
 /// Scans a resolved [ClassElement] looking for metadata-annotated members.
@@ -157,7 +157,7 @@ abstract class InjectClassVisitor {
     MethodElement method,
     bool singleton,
     bool asynchronous, {
-    SymbolPath qualifier,
+    SymbolPath? qualifier,
   });
 
   /// Called when a getter is annotated with `@provide`.
@@ -192,7 +192,7 @@ class _AnnotatedClassVisitor extends GeneralizingElementVisitor<Null> {
 
   @override
   Null visitFieldElement(FieldElement field) {
-    if (_isProvider(field.getter)) {
+    if (_isProvider(field.getter!)) {
       bool singleton = hasSingletonAnnotation(field);
       bool asynchronous = hasAsynchronousAnnotation(field);
       if (asynchronous) {

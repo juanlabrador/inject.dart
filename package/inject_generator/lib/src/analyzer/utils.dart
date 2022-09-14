@@ -16,24 +16,24 @@ SymbolPath getSymbolPath(Element element) {
         'package:inject bug. Please report it.');
   }
   return new SymbolPath.fromAbsoluteUri(
-    element.library.source.uri,
-    element.name,
+    element.library!.source.uri,
+    element.name!,
   );
 }
 
 /// Constructs a [InjectedType] from a [DartType].
-InjectedType getInjectedType(DartType type, {SymbolPath qualifier}) {
+InjectedType getInjectedType(DartType type, {SymbolPath? qualifier}) {
   if (type is FunctionType) {
     if (type.parameters.isNotEmpty) {
       builderContext.log.severe(
-          type.element,
+          type.element!,
           'Only no-arg typedefs are supported, '
           'and no-arg typedefs are treated as providers of the return type. ');
       throw new ArgumentError();
     }
     if (type.returnType.isDynamic) {
       builderContext.log.severe(
-          type.element,
+          type.element!,
           'Cannot create a provider of type dynamic. '
           'Your function type did not include a return type.');
       throw new ArgumentError();
@@ -44,20 +44,20 @@ InjectedType getInjectedType(DartType type, {SymbolPath qualifier}) {
   return new InjectedType(_getLookupKey(type, qualifier: qualifier), isProvider: false);
 }
 
-LookupKey _getLookupKey(DartType type, {SymbolPath qualifier}) =>
-    new LookupKey(getSymbolPath(type.element), qualifier: qualifier);
+LookupKey _getLookupKey(DartType type, {SymbolPath? qualifier}) =>
+    new LookupKey(getSymbolPath(type.element!), qualifier: qualifier);
 
 bool _hasAnnotation(Element element, SymbolPath annotationSymbol) {
-  return _getAnnotation(element, annotationSymbol, orElse: () => null) != null;
+  return _getAnnotation(element, annotationSymbol) != null;
 }
 
-ElementAnnotation _getAnnotation(Element element, SymbolPath annotationSymbol,
-    {ElementAnnotation orElse()}) {
+ElementAnnotation? _getAnnotation(Element element, SymbolPath annotationSymbol,
+    {ElementAnnotation orElse()?}) {
   List<ElementAnnotation> resolvedMetadata = element.metadata;
 
   for (int i = 0; i < resolvedMetadata.length; i++) {
     ElementAnnotation annotation = resolvedMetadata[i];
-    Element valueElement = annotation.computeConstantValue()?.type?.element;
+    Element? valueElement = annotation.computeConstantValue()?.type?.element;
 
     if (valueElement == null) {
       String pathToAnnotation = annotationSymbol.toHumanReadableString();
@@ -147,8 +147,8 @@ bool hasQualifier(Element e) => _hasAnnotation(e, SymbolPath.qualifier);
 /// Returns a global key for the `@Qualifier` annotated method.
 SymbolPath extractQualifier(Element e) {
   final metadata = _getAnnotation(e, SymbolPath.qualifier);
-  final key = metadata.computeConstantValue().getField('name').toSymbolValue();
-  return new SymbolPath.global(key);
+  final key = metadata?.computeConstantValue()?.getField('name')?.toSymbolValue();
+  return new SymbolPath.global(key!);
 }
 
 /// Whether [e] is annotated with `@Injector()`.
@@ -159,4 +159,4 @@ bool hasInjectorAnnotation(Element e) => _hasAnnotation(e, SymbolPath.injector);
 /// Throws if the annotation is missing. It is assumed that the calling code
 /// already verified the existence of the annotation using
 /// [hasInjectorAnnotation].
-ElementAnnotation getInjectorAnnotation(Element e) => _getAnnotation(e, SymbolPath.injector);
+ElementAnnotation? getInjectorAnnotation(Element e) => _getAnnotation(e, SymbolPath.injector);

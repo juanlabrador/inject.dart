@@ -36,14 +36,14 @@ class SymbolPath implements Comparable<SymbolPath> {
   static const String _dartPackage = 'dart';
 
   /// An alias to `new SymbolPath.fromAbsoluteUri(Uri.parse(...))`.
-  static SymbolPath parseAbsoluteUri(String assetUri, [String symbolName]) {
-    return new SymbolPath.fromAbsoluteUri(Uri.parse(assetUri), symbolName);
+  static SymbolPath parseAbsoluteUri(String assetUri, [String? symbolName]) {
+    return new SymbolPath.fromAbsoluteUri(Uri.parse(assetUri), symbolName ?? '');
   }
 
   /// Name of the package containing the Dart source code.
   ///
   /// If 'dart', is special cased to the Dart SDK. See [isDartSdk].
-  final String package;
+  final String? package;
 
   /// Location relative to the package root.
   ///
@@ -51,10 +51,10 @@ class SymbolPath implements Comparable<SymbolPath> {
   ///   - 'lib/foo.dart'
   ///   - 'bin/bar.dart'
   ///   - 'test/some/file.dart'
-  final String path;
+  final String? path;
 
   /// Name of the top-level symbol within the Dart source code referenced.
-  final String symbol;
+  final String? symbol;
 
   /// Constructor.
   ///
@@ -99,7 +99,7 @@ class SymbolPath implements Comparable<SymbolPath> {
         path = null;
 
   /// Create a [SymbolPath] using [assetUri].
-  factory SymbolPath.fromAbsoluteUri(Uri assetUri, [String symbolName]) {
+  factory SymbolPath.fromAbsoluteUri(Uri assetUri, [String? symbolName]) {
     assetUri = toAssetUri(assetUri);
     symbolName ??= assetUri.fragment;
     if (assetUri.scheme == _dartPackage) {
@@ -171,14 +171,14 @@ class SymbolPath implements Comparable<SymbolPath> {
 
   @override
   int compareTo(SymbolPath symbolPath) {
-    var order = package.compareTo(symbolPath.package);
+    var order = package?.compareTo(symbolPath.package!);
     if (order == 0) {
-      order = path.compareTo(symbolPath.path);
+      order = path?.compareTo(symbolPath.path!);
     }
     if (order == 0) {
-      order = symbol.compareTo(symbolPath.symbol);
+      order = symbol?.compareTo(symbolPath.symbol!);
     }
-    return order;
+    return order!;
   }
 
   /// Returns a new absolute 'dart:', 'asset:', or 'global:' [Uri].
@@ -194,7 +194,7 @@ class SymbolPath implements Comparable<SymbolPath> {
   }
 
   /// Returns a [Uri] for this path that can be used in a Dart import statement.
-  Uri toDartUri({Uri relativeTo}) {
+  Uri toDartUri({Uri? relativeTo}) {
     if (isGlobal) {
       throw new UnsupportedError('Global keys do not map to Dart source.');
     }
@@ -218,7 +218,7 @@ class SymbolPath implements Comparable<SymbolPath> {
       }
     }
 
-    var pathSegments = path.split('/');
+    var pathSegments = path!.split('/');
 
     if (pathSegments.first != 'lib') {
       throw new StateError(
